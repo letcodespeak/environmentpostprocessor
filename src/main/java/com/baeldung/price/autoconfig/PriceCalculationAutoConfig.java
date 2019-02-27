@@ -1,4 +1,4 @@
-package com.baeldung.autoconfig;
+package com.baeldung.price.autoconfig;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import  org.springframework.core.Ordered;
 
-import com.baeldung.basket.calculation.GrossPriceCalculator;
-import com.baeldung.basket.calculation.NetPriceCalculator;
-import com.baeldung.basket.calculation.PriceCalculator;
+import com.baeldung.price.calculation.GrossPriceCalculator;
+import com.baeldung.price.calculation.NetPriceCalculator;
+import com.baeldung.price.calculation.PriceCalculator;
 
 @Configuration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE) 
-public class autoconfigExample {
+public class PriceCalculationAutoConfig {
 	
 	@Bean
 	@ConditionalOnProperty(

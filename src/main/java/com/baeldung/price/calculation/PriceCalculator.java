@@ -1,4 +1,4 @@
-package com.baeldung.basket.calculation;
+package com.baeldung.price.calculation;
 
 public interface PriceCalculator {
 	
