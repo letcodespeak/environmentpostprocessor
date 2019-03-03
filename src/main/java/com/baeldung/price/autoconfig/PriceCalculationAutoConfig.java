@@ -5,35 +5,28 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import  org.springframework.core.Ordered;
+import org.springframework.core.Ordered;
 
-import com.baeldung.price.calculation.GrossPriceCalculator;
-import com.baeldung.price.calculation.NetPriceCalculator;
-import com.baeldung.price.calculation.PriceCalculator;
+import com.baeldung.price.calculator.GrossPriceCalculator;
+import com.baeldung.price.calculator.NetPriceCalculator;
+import com.baeldung.price.calculator.PriceCalculator;
 
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE) 
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 public class PriceCalculationAutoConfig {
-	
-	@Bean
-	@ConditionalOnProperty(
-	  name = "com.baeldung.ecommerce.basket.cal.mode", 
-	  havingValue = "NET")
-	@ConditionalOnMissingBean
-	public PriceCalculator getNetPriceCalculator() {
-		return new NetPriceCalculator();
-		
-	}
 
-	
-	@Bean
-	@ConditionalOnProperty(
-	  name = "com.baeldung.ecommerce.basket.cal.mode", 
-	  havingValue = "GROSS")
-	@ConditionalOnMissingBean
-	public PriceCalculator getGrossPriceCalculator() {
-		return new GrossPriceCalculator();
-		
-	}
-	
+    @Bean
+    @ConditionalOnProperty(name = "com.baeldung.ecommerce.calculation.mode", havingValue = "NET")
+    @ConditionalOnMissingBean
+    public PriceCalculator getNetPriceCalculator() {
+        return new NetPriceCalculator();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "com.baeldung.ecommerce.calculation.mode", havingValue = "GROSS")
+    @ConditionalOnMissingBean
+    public PriceCalculator getGrossPriceCalculator() {
+        return new GrossPriceCalculator();
+    }
+
 }

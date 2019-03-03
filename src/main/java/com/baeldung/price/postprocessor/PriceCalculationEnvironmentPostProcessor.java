@@ -1,29 +1,67 @@
 package com.baeldung.price.postprocessor;
 
-import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePropertySource;
+import org.springframework.core.env.StandardEnvironment;
 
-public class PriceCalculationEnvironmentPostProcessor implements EnvironmentPostProcessor {
+public class PriceCalculationEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
-	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		Resource path = new ClassPathResource("external.properties");
+    /**
+     * The default order for the processor.
+     */
+    public static final int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE;
 
-		try {
-			PropertySource<?> propertySource = new ResourcePropertySource("externalprops", path);
-			environment.getPropertySources().addLast(propertySource);
+    private int order = DEFAULT_ORDER;
 
-		} catch (IOException e) {
-			throw new IllegalStateException("Failed to load external configuration -  " + path, e);
-		}
+    private static final String PROPERTY_PREFIX = "com.baeldung.ecommerce.";
 
-	}
+    private static final String OS_ENV_PROPERTY_CALCUATION_MODE = "calculation_mode";
+    private static final String OS_ENV_PROPERTY_GROSS_CALCULATION_TAX_RATE = "gross_calculation_tax_rate";
+
+    @Override
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+
+        PropertySource<?> systemEnvironmentPropertySource = environment.getPropertySources()
+            .get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+
+        if (isActive(systemEnvironmentPropertySource)) {
+            Map<String, Object> content = new LinkedHashMap<>();
+            content.put(key(OS_ENV_PROPERTY_CALCUATION_MODE), systemEnvironmentPropertySource.getProperty(OS_ENV_PROPERTY_CALCUATION_MODE));
+            content.put(key(OS_ENV_PROPERTY_GROSS_CALCULATION_TAX_RATE), systemEnvironmentPropertySource.getProperty(OS_ENV_PROPERTY_GROSS_CALCULATION_TAX_RATE));
+            PropertySource<?> priceCalcuationPropertySource = new MapPropertySource("priceCalcuationPS", content);
+            environment.getPropertySources()
+                .addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, priceCalcuationPropertySource);
+        } else {
+            throw new IllegalStateException("Required system environment properties not found!");
+        }
+
+    }
+
+    private String key(String key) {
+        return PROPERTY_PREFIX + key.replaceAll("\\_", ".");
+    }
+
+    private boolean isActive(PropertySource<?> systemEnvpropertySource) {
+        if (systemEnvpropertySource.containsProperty(OS_ENV_PROPERTY_CALCUATION_MODE) && systemEnvpropertySource.containsProperty(OS_ENV_PROPERTY_GROSS_CALCULATION_TAX_RATE)) {
+            return true;
+        } else
+            return false;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    @Override
+    public int getOrder() {
+        return order;
+    }
 
 }
