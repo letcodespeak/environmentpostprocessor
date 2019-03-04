@@ -32,10 +32,10 @@ public class PriceCalculationEnvironmentPostProcessor implements EnvironmentPost
             .get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 
         if (isActive(systemEnvironmentPropertySource)) {
-            Map<String, Object> content = new LinkedHashMap<>();
-            content.put(key(OS_ENV_PROPERTY_CALCUATION_MODE), systemEnvironmentPropertySource.getProperty(OS_ENV_PROPERTY_CALCUATION_MODE));
-            content.put(key(OS_ENV_PROPERTY_GROSS_CALCULATION_TAX_RATE), systemEnvironmentPropertySource.getProperty(OS_ENV_PROPERTY_GROSS_CALCULATION_TAX_RATE));
-            PropertySource<?> priceCalcuationPropertySource = new MapPropertySource("priceCalcuationPS", content);
+            Map<String, Object> priceCalculationConfiguration = new LinkedHashMap<>();
+            priceCalculationConfiguration.put(key(OS_ENV_PROPERTY_CALCUATION_MODE), systemEnvironmentPropertySource.getProperty(OS_ENV_PROPERTY_CALCUATION_MODE));
+            priceCalculationConfiguration.put(key(OS_ENV_PROPERTY_GROSS_CALCULATION_TAX_RATE), systemEnvironmentPropertySource.getProperty(OS_ENV_PROPERTY_GROSS_CALCULATION_TAX_RATE));
+            PropertySource<?> priceCalcuationPropertySource = new MapPropertySource("priceCalcuationPS", priceCalculationConfiguration);
             environment.getPropertySources()
                 .addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, priceCalcuationPropertySource);
         } else {
